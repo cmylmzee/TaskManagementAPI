@@ -13,5 +13,5 @@ public interface TaskService {
      TaskDto updateTaskById(TaskDto taskDto, Long id);
      TaskDto getTaskById(Long id);
      List<TaskDto> getAllTasks();
-
+     public void assingTaskToUser(Long userId, Long taskId);
 }

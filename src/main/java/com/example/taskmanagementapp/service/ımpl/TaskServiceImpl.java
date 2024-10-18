@@ -2,6 +2,8 @@ package com.example.taskmanagementapp.service.ımpl;
 
 import com.example.taskmanagementapp.dto.TaskDto;
 import com.example.taskmanagementapp.entity.Task;
+import com.example.taskmanagementapp.entity.User;
+
 import com.example.taskmanagementapp.mapper.TaskMapper;
 import com.example.taskmanagementapp.repository.TaskRepository;
 import com.example.taskmanagementapp.repository.UserRepository;
@@ -16,22 +18,21 @@ public class TaskServiceImpl implements TaskService {
 
 
     TaskRepository taskRepository;
+    UserRepository userRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
 
     @Override
     public TaskDto createTask(TaskDto taskDto) {
-        Task task = new Task();
+        Task task = TaskMapper.mapToTask(taskDto);
+        Task savedTask = taskRepository.save(task);
 
-        task.setTaskName(taskDto.getTaskName());
-        task.setDescription(taskDto.getDescription());
-        taskDto.setId(task.getId());
-        taskRepository.save(task);
 
-        return taskDto;
+        return TaskMapper.mapToTaskDto(savedTask);
     }
 
     @Override
@@ -60,5 +61,15 @@ public class TaskServiceImpl implements TaskService {
 
 
        return tasks.stream().map((task -> TaskMapper.mapToTaskDto(task))).collect(Collectors.toList());
+    }
+
+    @Override
+    public void assingTaskToUser(Long userId, Long taskId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User is not find" + userId));
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task is not find" + taskId));
+
+        user.getTasks().add(task);
+
+        userRepository.save(user);
     }
 }

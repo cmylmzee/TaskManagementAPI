@@ -40,4 +40,13 @@ public class TaskController {
     public ResponseEntity<List<TaskDto>> getAllTasks() {
         return new ResponseEntity<>(taskService.getAllTasks(), HttpStatus.OK);
     }
+
+    @PostMapping("/assign")
+    public ResponseEntity<String> assignTaskToUser(@RequestParam(name ="userId") Long userId, @RequestParam(name = "taskId") Long taskId) {
+        taskService.assingTaskToUser(userId, taskId);
+        return ResponseEntity.ok("The task is assigned successfully");
+    }
+
+
+
 }
